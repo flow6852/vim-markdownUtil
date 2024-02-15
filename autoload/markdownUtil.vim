@@ -13,11 +13,15 @@ function! markdownUtil#formatter(file)
         let s:cmd = "cat " . a:file . " | deno fmt --ext md -"
     endif
 
+    let s:cursor = getcursor()
+
     for line in systemlist(s:cmd)
         call setline(s:i, line)
         let s:i = s:i + 1
     endfor
     call execute("%s/\\\\$/  /g", "silent!")
+
+    call cursor(s:cursor)
 endfunction
 
 function! markdownUtil#insertTableFormatter()
