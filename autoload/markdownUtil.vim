@@ -13,7 +13,7 @@ function! markdownUtil#formatter(file)
         let s:cmd = "cat " . a:file . " | deno fmt --ext md -"
     endif
 
-    let s:cursor = getcursor()
+    let s:cursor = getcurpos()
 
     for line in systemlist(s:cmd)
         call setline(s:i, line)
