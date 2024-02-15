@@ -21,7 +21,7 @@ function! markdownUtil#formatter(file)
     endfor
     call execute("%s/\\\\$/  /g", "silent!")
 
-    call cursor(s:cursor)
+    call cursor(slice(s:cursor, 1))
 endfunction
 
 function! markdownUtil#insertTableFormatter()
