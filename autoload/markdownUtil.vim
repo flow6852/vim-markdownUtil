@@ -13,7 +13,11 @@ function! markdownUtil#formatter(file)
         let s:cmd = "cat " . a:file . " | deno fmt --ext md -"
     endif
 
+    call execute("write")
+
     let s:cursor = getcurpos(".")
+
+    call execute("%delete")
 
     for line in systemlist(s:cmd)
         call setline(s:i, line)
@@ -25,6 +29,7 @@ function! markdownUtil#formatter(file)
 endfunction
 
 function! markdownUtil#insertTableFormatter()
+
     let s:lineString = getline(line("."))
     let s:tables = split(s:lineString, "|")
     if (match(s:tables[0], "[^ ]") > -1)
