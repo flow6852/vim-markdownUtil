@@ -29,7 +29,6 @@ function! markdownUtil#formatter(file)
 endfunction
 
 function! markdownUtil#insertTableFormatter()
-
     let s:lineString = getline(line("."))
     let s:tables = split(s:lineString, "|")
     if (match(s:tables[0], "[^ ]") > -1)
@@ -42,4 +41,20 @@ function! markdownUtil#insertTableFormatter()
         let s:index = s:index + 1
     endwhile
     call append(line("."), join(s:tables, "|") .. "|")
+endfunction
+
+function! markdownUtil#createTableOfContents()
+    let s:bufnr = bufnr()
+    let s:linecount = get(get(getbufinfo(s:bufnr), 0), "linecount")
+    let s:titles = [] " string, depth, lnum
+    let s:lnum = 1
+    while s:lnum < s:linecount
+        let s:line = getline(s:lnum)
+        if (match(line, "#") == 1)
+            add(s:titles, #{string: join(slice(split(line, " "), 1) " "), depth: count(get(split(line, " "), 1), "#"), lnum: s:lnum})
+        endif
+        let s:lnum = s:lnum + 1
+    endwhile
+
+    echo s:titles
 endfunction
