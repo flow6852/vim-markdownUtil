@@ -50,11 +50,41 @@ function! markdownUtil#createTableOfContents()
     let s:lnum = 1
     while s:lnum < s:linecount
         let s:line = getline(s:lnum)
-        if (match(line, "#") == 1)
-            add(s:titles, #{string: join(slice(split(line, " "), 1) " "), depth: count(get(split(line, " "), 1), "#"), lnum: s:lnum})
+        if (match(s:line, "#") == 0)
+            let s:string = join(slice(split(s:line, " "), 1), " ")
+            let s:depth =  count(get(split(s:line, " "), 0), "#")
+            let s:link = get(split(s:line, " "), 0) . s:string
+            call add(s:titles, #{string: s:string, depth: s:depth, lnum: s:lnum, link: s:link})
         endif
         let s:lnum = s:lnum + 1
     endwhile
 
-    echo s:titles
+    let s:startComment = "<!--start:toc:markdownUtil -->"
+    let s:endComment = "<!--end:toc:markdownUtil -->"
+    let s:tocCommentStartLnum = 3
+
+    if getline(s:tocCommentStartLnum) == s:startComment
+        let s:lnum = s:tocCommentStartLnum
+        while getline(s:lnum) != s:endComment && s:lnum < s:linecount
+            let s:lnum = s:lnum + 1
+        endwhile
+
+        if s:lnum >= s:linecount
+            echoerr "TOC end marker not exists.\nmarker: " . s:endComment
+            return 1
+        endif
+
+        call deletebufline(bufname("%"), s:tocCommentStartLnum, s:lnum + 1)
+    endif
+
+    call append(s:tocCommentStartLnum - 1, s:startComment)
+    let s:index = 0
+    while s:index < len(s:titles)
+        let s:titleString = repeat("  ", get(s:titles, s:index).depth-1) . "+ [" . get(s:titles, s:index).string . "](" . get(s:titles, s:index).link . ")"
+        call append(s:index + s:tocCommentStartLnum, s:titleString)
+        let s:index = s:index + 1
+    endwhile
+
+    call append(s:index + s:tocCommentStartLnum, s:endComment)
+    call append(s:index + s:tocCommentStartLnum + 1, "") 
 endfunction
