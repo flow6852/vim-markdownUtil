@@ -6,12 +6,8 @@ function! markdownUtil#formatter(file)
     endif
 
     let s:i = 1
-    let s:cmd = ""
-    if (&shell == "pwsh.exe" || &shell == "powershell.exe")
-        let s:cmd = "Get-Content " . a:file . " | deno fmt --ext md -"
-    else
-        let s:cmd = "cat " . a:file . " | deno fmt --ext md -"
-    endif
+    let s:text = join(readfile(a:file), "\n")
+    let s:cmd = "echo " . s:text . " | deno fmt --ext md -"
 
     call execute("write")
 
